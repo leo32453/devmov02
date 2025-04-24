@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -120,9 +122,38 @@ public class MainActivity extends AppCompatActivity {
             if(item.getItemId() == R.id.showItem) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 Task tTask = tasks.get(currentPosition);
-                String tMsg = "Name: " + tTask.getName() + "\n" + "Description: " + tTask.getDescription();
+                String priority = "";
+                switch (tTask.getPrio()){
+                    case 0:
+                        priority = "Low";
+                        break;
+                    case 1:
+                        priority = "Medium";
+                        break;
+                    case 2:
+                        priority = "High";
+                        break;
+                }
+                Log.d("MainActivity", "priority = " + priority);
+
+                String tMsg = "Name: " + tTask.getName() + "\n" + "Description: " + tTask.getDescription()
+                        + "\n" + "Priority: " + priority;
                 builder.setTitle("Task details");
                 builder.setMessage(tMsg);
+
+                builder.setNeutralButton("Prioritize", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if (tTask.getPrio() == 2){
+                            Context context = getApplicationContext();
+                            Toast toast = Toast.makeText(context, "Already High Priority", Toast.LENGTH_SHORT);
+                            toast.show();
+                        } else {
+                            tTask.setPrio(tTask.getPrio() + 1);
+                        }
+                    }
+                });
+
                 builder.setPositiveButton("OK", null);
                 builder.create().show();
                 mode.finish();    //encerra o action mode
